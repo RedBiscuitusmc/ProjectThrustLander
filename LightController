@@ -1,0 +1,60 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class LightController : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    [Header("SerilizeField")]
+    [SerializeField] float BlinkAtThisTime;
+    [SerializeField] float WaitBetweenBlinks;
+    [SerializeField] float Timer;
+    #endregion
+    //**=============================================
+    #region |Referances|
+    [Header("Class")]
+    public Light _light;
+    #endregion
+    #region |Varibles|
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    void Awake()
+    {
+        
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    //?=============================================
+    void Update()
+    {
+        FlickerLight();
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    //?=============================================
+    void FlickerLight()
+    {
+        Timer += Time.deltaTime;
+        if(Timer > BlinkAtThisTime)
+        {
+            StartCoroutine("Blink");
+            Timer = 0;
+        }
+    }
+    //?=============================================
+    IEnumerator Blink()
+    {
+        _light.enabled = false;
+        yield return new WaitForSeconds(WaitBetweenBlinks);
+        _light.enabled = true;
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
