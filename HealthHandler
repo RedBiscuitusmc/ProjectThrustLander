@@ -1,0 +1,155 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class HealthHandler : MonoBehaviour
+{ 
+    //**=============================================
+    #region |SerializedFields|
+    
+    [Header("Health Control Amounts")]
+    [SerializeField] float playerDamageRate = 0f;
+    [SerializeField] float maxHealth = 0f;
+
+    [Header("HealthPack Control Amounts")]
+    [SerializeField] float healthPackAmount = 0f;
+    
+    #endregion
+    //**=============================================
+    #region |Referances|
+
+    [Header("Class Referances")]
+    CollisionHandler collisionHandler;
+    
+    #endregion
+    //**=============================================
+    #region |Varibles|
+    
+    [Header("Bools")]
+    public bool isPlayerDead = false;
+    
+    [Header("Floats")]
+    private float currentHealth;
+    private  float updateHealth;
+    
+    [Header("Int's")]
+    private int ZeroPlayerHealth = 7;
+    private int PlayerKillAmount = 700;
+    
+    [Header("Public Ref")]
+    public Slider slider;
+    
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Awake()
+    {
+        reSetCurrentHealth();
+        collisionHandler = GetComponent<CollisionHandler>();
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    //?=============================================
+    void Update()
+    {
+        
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+    #region  |Methods|
+    //?=============================================
+    public void OutOfBoundsDamage()
+    {
+        if(currentHealth != ZeroPlayerHealth)
+        {       
+            updateHealth = (currentHealth -= PlayerKillAmount);
+            currentHealth = updateHealth;
+            Debug.Log($"Health is currently:{currentHealth}");
+            Debug.Log($"Player Should be dead ----health amount is:{currentHealth}");
+            HealthSetCheck();
+        }
+        else if(currentHealth <= ZeroPlayerHealth)
+        {
+            HealthCheck(currentHealth);
+            isPlayerDead = true;
+            collisionHandler.playOutOfBoundsSequence();
+        }
+    }
+    //?=============================================
+    public void DamagePlayer()
+    {   
+        if (currentHealth != ZeroPlayerHealth)
+        {
+            updateHealth = (currentHealth -= playerDamageRate);
+            currentHealth = updateHealth;
+            Debug.Log($"Health is currently:{currentHealth}");
+            HealthSetCheck();
+        }
+        else if (currentHealth <= ZeroPlayerHealth)
+        {
+            HealthCheck(currentHealth);
+        }
+    }
+     //?=============================================
+    public void PickedUpHealth()
+    {
+        if  ( currentHealth + healthPackAmount >= maxHealth )
+            {
+                currentHealth = maxHealth;
+                SetHealthBar(currentHealth);
+            }
+        else
+            {
+                currentHealth += healthPackAmount;
+                Debug.Log($"Health is currently:{currentHealth}");
+                SetHealthBar(currentHealth);
+            }
+        isPlayerDead = false;
+    }
+    //?=============================================
+    private void HealthCheck(float currentHealth)
+    {
+        if (currentHealth <= ZeroPlayerHealth)
+        {
+            isPlayerDead = true;
+            collisionHandler.playDeathSequence(); 
+        }
+    }
+    //?=============================================
+    private void HealthSetCheck()
+    {
+        SetHealthBar(currentHealth);
+        HealthCheck(currentHealth);
+    }
+    //?=============================================
+    //==================== U.I. ====================
+    //?=============================================
+    void reSetCurrentHealth() //on awake reset
+    {
+        if( currentHealth <= ZeroPlayerHealth )
+        {
+            currentHealth = maxHealth;
+            SetMaxHealthBar( currentHealth );
+        }
+    }
+    //?=============================================
+    private void SetMaxHealthBar(float health)
+    {
+        slider.maxValue = health;
+        slider.value = health;
+    }
+    //?=============================================
+    private void SetHealthBar(float health)
+    {
+        slider.value = health;
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
