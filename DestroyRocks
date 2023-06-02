@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DestroyRocks : MonoBehaviour
+{
+   //**=============================================
+    #region |Referances|
+    [Header("Class")]
+    [SerializeField] GameObject rock;
+    #endregion
+    //**=============================================
+    #region |Referances|
+   ParticleController particleController;
+   #endregion
+   //**=============================================
+    #region |Start / Update / Awake|
+    void Awake() 
+    {
+      particleController = GetComponent<ParticleController>();  
+    }
+    void Start()
+    {
+        
+    }
+   //**=============================================
+    void Update()
+    {
+        
+    }
+    #endregion
+   //**=============================================
+   #region |Methods|
+   void OnCollisionEnter(Collision other) 
+   {
+      if(other.gameObject.tag == "SpaceRock")
+      {
+         particleController.PlayRockPartcile();
+         Destroy(other.gameObject);
+      }
+   }
+   void CheckPass()
+   {
+      
+   }
+   #endregion
+   //**=============================================
+}
