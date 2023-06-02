@@ -1,0 +1,171 @@
+using System;
+using System.Globalization;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+public class Movement : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    [Header("Rocket Control Speed")]
+	[SerializeField] float MainThrust = 750f;
+	[SerializeField] float RotationThrust = 100f;
+    #endregion
+    //**=============================================
+    #region |Referances|
+    [Header("Class")]
+    CollisionHandler collisionHandler;
+    FuelController fuelController;
+    ParticleController particleController;
+    SoundController soundController;
+    //?=============================================
+	[Header("General")]
+    Rigidbody Rigidbody;
+	RigidbodyConstraints RigidbodyConstraints;
+    #endregion
+    //**=============================================
+    #region |Varibles|
+	private bool PlayerHasControl = true;
+    private bool thrustAudioPlaying = false;
+    private bool rotationAudioPlaying = false;
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Awake()
+    {
+        soundController = GetComponent<SoundController>();
+        particleController = GetComponent<ParticleController>();
+        fuelController = GetComponent<FuelController>();
+        collisionHandler = GetComponent<CollisionHandler>();
+        Rigidbody = GetComponent<Rigidbody>();
+        RigidbodyConstraints = Rigidbody.constraints; 
+    }
+    //?=============================================
+	void Start() 
+    {
+	
+	}
+    //?=============================================
+    void Update() 
+    {
+        CheckPlayerControl();
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    //?=============================================
+    public void RemovePlayerControl() 
+    {
+		PlayerHasControl = false;
+	}
+    //?=============================================
+    void CheckPlayerControl()
+    {
+        if (PlayerHasControl) 
+        {
+            InputProcress();
+		}
+        else
+        {
+            return;
+        }
+    }
+    //?=============================================
+    void InputProcress()
+    {
+    if  (Input.GetKey(KeyCode.Space)) 
+        {
+            if (PlayerHasControl) 
+            {
+                StartMainThrust();
+		    }   
+        } 
+    else 
+        {
+            StopMainThrust();    
+        }
+    if  (Input.GetKey(KeyCode.A)) 
+        {
+            if (PlayerHasControl) 
+            {
+                StartLeftThrust();
+		    }
+        } 
+    else 
+        {
+            StopLeftThrust();
+        }
+    if  (Input.GetKey(KeyCode.D))
+        {
+            if (PlayerHasControl) 
+            {
+                StartRightThrust();
+		    }
+        }
+    else 
+        {
+            StopRightThrust();
+        }
+    }
+    //?=============================================
+    void StartMainThrust()
+    {
+        soundController.StartMainThrustAudio();
+        particleController.PlayMainThrustParticles();
+        fuelController.MainThrustBurn();
+		Rigidbody.AddRelativeForce(Vector3.up * MainThrust * Time.deltaTime);
+        thrustAudioPlaying = true;
+    }
+    //?=============================================
+    void StopMainThrust()
+    {
+        soundController.StopMainThrustAudio();
+        particleController.StopMainThrustParticles();
+        thrustAudioPlaying = false;
+    }
+    //?=============================================
+    void StartLeftThrust()
+    {
+        soundController.StartAuxiliaryThrustAudio();
+        particleController.PlayRightThrustParticle();
+        fuelController.SecondThrustBurn();
+        ApplyRotation(RotationThrust * -1);
+        rotationAudioPlaying = true;
+    }
+    //?=============================================
+    void StopLeftThrust()
+    {
+        soundController.StopAuxiliaryThrustAudio();
+        particleController.StopRightThrustParticle();
+        rotationAudioPlaying = false;
+    }
+    //?=============================================
+    void StartRightThrust()
+    {
+        soundController.StartAuxiliaryThrustAudio();
+        particleController.PlayLeftThrustParticle();
+        fuelController.SecondThrustBurn();
+        ApplyRotation(RotationThrust);
+        rotationAudioPlaying = true;
+    }
+    //?=============================================
+    void StopRightThrust()
+    {
+        soundController.StopAuxiliaryThrustAudio();
+        particleController.StopLeftThrustParticle();
+        rotationAudioPlaying = false;
+    }
+    //?=============================================
+    private void ApplyRotation(float rotationThrust) 
+    {
+		Rigidbody.freezeRotation = true;
+		transform.Rotate(Vector3.forward * rotationThrust * Time.deltaTime);
+		Rigidbody.constraints = RigidbodyConstraints;
+	}
+    //?=============================================
+    #endregion
+    //**=============================================
+}
