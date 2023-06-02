@@ -1,0 +1,185 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class CollisionHandler : MonoBehaviour
+{
+    //**=============================================
+     #region |SerializedFields|
+
+    [Header("SerilizeField")]
+    [SerializeField] float delayRespawnTime = 0f;
+    [SerializeField] float delayLanderDestroyTime = 0f;
+    [SerializeField] float delayLoadNextLevelTime = 0f;
+    [SerializeField] GameObject lander;
+    [SerializeField] GameObject lightController;
+    [SerializeField] GameObject lightController02;
+
+    #endregion
+    //**=============================================
+    #region |Varibles|
+    public bool isTransitioning = false; //acts as a player lockout from addional collisions
+    #endregion
+    //**=============================================
+    #region |Referances|
+
+    [Header("Class")]
+    SoundController soundController;
+    Movement movement;
+    ParticleController particleController;
+    DestroyRocks destroyRocks;
+    HealthHandler healthHandler;
+    FuelController fuelController;
+    
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    void Awake() 
+    {
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    void OnCollisionEnter(Collision other) 
+    {
+    if( isTransitioning == true)
+        {
+            return;
+        }
+           switch(other.gameObject.tag)
+           {
+        case "Friendly":
+                Debug.Log("This thing is friendly");
+                break;
+        case "Finish":
+                NextLevelSequence();
+                break;
+        case "fuelPickUp":
+                FuelPickUpSequence();
+                break;
+        case "HealthPickUp":
+                HealthPickUpSequence();
+                break;
+        case "OutOfBounds":
+                playOutOfBoundsSequence();
+                break;
+        case "FinalLevel":
+                FinalLevelSequence();
+                break;
+        default:
+                CrashSequence();
+                break;
+           }
+    }
+    //?=============================================
+    public void playDeathSequence()
+    {
+        turnOffPlayerLights();
+        movement.RemovePlayerControl();
+        isTransitioning = true;
+        particleController.PlayCrashParticle();
+        particleController.StopAllParticles();
+        soundController.StopAllAudio();
+        Invoke("PlayerCrash",delayLanderDestroyTime);
+        Invoke("ReloadLevel", delayRespawnTime);
+        //Invoke("particleController.StopAllParticles()", delayRespawnTime);
+    }
+    //?=============================================
+    public void playOutOfBoundsSequence()
+    {
+        if (healthHandler.isPlayerDead != true)
+            {
+                healthHandler.OutOfBoundsDamage();
+            }
+    }
+    //?=============================================
+    public void PlayZeroFuelSequence()
+    { 
+        isTransitioning = true;
+        particleController.StopAllParticles();
+        soundController.StopAllAudio();
+        Invoke("ReloadLevel", delayRespawnTime);
+    }
+    //?=============================================
+    void HealthPickUpSequence()
+    {
+        isTransitioning = false;
+        soundController.PlayHealthPickUpAudio();
+        particleController.PlayHealthPickUpParticle();
+        Debug.Log("Hit the health Sequence");
+        healthHandler.PickedUpHealth();
+    }
+    //?=============================================
+    void CrashSequence()
+    {
+        if( healthHandler.isPlayerDead != true )
+            {
+                soundController.PlayCrashAudio();
+                particleController.PlayRockPartcile();
+                healthHandler.DamagePlayer();
+            }
+    }
+    //?=============================================
+    void FinalLevelSequence()
+    {
+        isTransitioning = true;
+        movement.RemovePlayerControl();
+        particleController.StopMainThrustParticles();
+        particleController.PlaySuccessParticle();
+        Invoke("MainMenuLoad", delayLoadNextLevelTime);
+    }
+    //?=============================================
+    void FuelPickUpSequence()
+    {
+        particleController.PlayFuelPickUpParticle();
+        fuelController.PickedUpFuel();
+    }
+    //?=============================================
+    void NextLevelSequence()
+    {
+        movement.RemovePlayerControl();
+        isTransitioning = false;
+        particleController.StopAllParticles();
+        particleController.PlaySuccessParticle();
+        Invoke("FinishLevel", delayLoadNextLevelTime);
+    }
+    //?=============================================
+    void turnOffPlayerLights()
+    {
+        lightController.SetActive(false);
+        lightController02.SetActive(false);
+    }
+    void ReloadLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
+    }
+    //?=============================================
+    void FinishLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+    //?=============================================
+    void MainMenuLoad()
+    {
+        int nextSceneIndex = 0;
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+    //?=============================================
+    [System.Obsolete]
+    void PlayerCrash()
+    {
+        lander.active = false;
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
