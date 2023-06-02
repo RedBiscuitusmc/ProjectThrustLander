@@ -1,0 +1,155 @@
+using System;
+using System.Globalization;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class FuelController : MonoBehaviour
+{
+    //**=============================================
+
+    #region |SerializedFields|
+    //?==============================================
+    [Header("Fuel Control Amounts")]
+	  [SerializeField] public float maxFuel = 0f;
+    [SerializeField] public float currentFuel = 0f;
+    [SerializeField] public float burnFuelRate = 0f;
+    
+    [Header("FuelPack Control Amounts")]
+    [SerializeField] float fuelPackAmount = 0f;
+    //?==============================================
+    #endregion
+
+    //**=============================================
+
+    #region |Referances|
+    //?==============================================
+    [Header("Class Referances")]
+    CollisionHandler collisionHandler;
+    Movement movement;
+    //?==============================================
+    #endregion
+
+    //**=============================================
+
+    #region |Varibles|
+    //?==============================================
+    private bool isFuelEmpty {get; set;} = false;
+
+    
+    [Header("Floats")]
+    private float burnOffRate;
+    private float zeroFuel = 0f;
+    
+    [Header("Public Ref")]
+    public Slider slider;
+    //?=============================================
+    #endregion
+
+    //**=============================================
+
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Awake()
+    {
+        movement = GetComponent<Movement>();
+        collisionHandler = GetComponent<CollisionHandler>();
+        SetCurrentFuelRate();
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    //?=============================================
+    void Update()
+    {
+        
+    }
+    //?=============================================
+    #endregion
+
+    //**=============================================
+
+    #region  |Methods|
+    //?=============================================
+    public void MainThrustBurn()
+    {
+        if(isFuelEmpty != true)
+        {
+            burnOffRate = (currentFuel -= burnFuelRate);
+            currentFuel = burnOffRate;
+            SetThrustBarUI(currentFuel);
+            FuelCheck(currentFuel);
+        }
+    }
+    //?=============================================
+    private void FuelCheck(float currentFuel)
+    {
+        if (currentFuel <= zeroFuel)
+        {
+            movement.RemovePlayerControl();
+            collisionHandler.PlayZeroFuelSequence();  
+        }
+    }
+    //?=============================================
+    public void SecondThrustBurn()
+    {
+        if ( isFuelEmpty == false )
+        {
+            burnOffRate = (currentFuel -= burnFuelRate);
+            currentFuel = burnOffRate;
+            SetThrustBarUI(currentFuel);
+        }
+    }
+    //?=============================================
+    public void PickedUpFuel()
+    {
+        if  ( currentFuel + fuelPackAmount >= maxFuel )
+            {
+                currentFuel = maxFuel;
+                SetThrustBarUI(currentFuel);
+            }
+        else
+            {
+                currentFuel += fuelPackAmount;
+                SetThrustBarUI(currentFuel);
+            }
+        isFuelEmpty = false;
+    }
+    //?=============================================
+    void OnCollisionEnter(Collision other) 
+    {
+      if(other.gameObject.tag == "fuelPickUp" || other.gameObject.tag == "HealthPickUp")
+      {
+         Destroy(other.gameObject);
+      }
+    }
+    //?=============================================
+    void SetCurrentFuelRate() //on awake reset
+    {
+        if( currentFuel == zeroFuel )
+        {
+            currentFuel = maxFuel;
+            SetMaxThrust( currentFuel );
+        }
+    }
+    //?=============================================
+    //==================== U.I. ====================
+    //?=============================================
+    private void SetMaxThrust(float maxFuel)
+    {
+        slider.maxValue = maxFuel;
+        slider.value = maxFuel;
+    }
+    //?=============================================
+    private void SetThrustBarUI(float fuel)
+    {
+        slider.value = fuel;
+    }
+    //?=============================================
+    #endregion
+
+    //**=============================================
+}
