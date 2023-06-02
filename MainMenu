@@ -1,0 +1,101 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+public class MainMenu : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    [Header("SerilizeField")]
+    [SerializeField] string Lvl0 = "Lvl0";
+    #endregion
+    //**=============================================
+    #region |Varibles|
+    public bool GameIsPaused = false;
+    #endregion
+    //**=============================================
+    #region |Referances|
+    [Header("Class")]
+    public GameObject pauseMenuUI;
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Awake() 
+    {
+        
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    //?=============================================
+    void Update()
+    {
+        PauseMenuProcressing();
+    }
+    #endregion
+    //**=============================================
+    #region  |Methods|
+    //?=============================================
+    public void PlayGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+    //?=============================================
+    public void QuitGame()
+    {
+        #if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+        #else
+        Application.Quit();
+        #endif
+    }
+    //?=============================================
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene(Lvl0);
+    }
+    //?=============================================
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex -1 );
+    }
+    //?=============================================
+    void PauseMenuProcressing()
+    {
+        if( (Input.GetKeyDown(KeyCode.Tab) || (Input.GetKeyDown(KeyCode.Escape)) ) )
+        {
+            if(!GameIsPaused)
+            {
+                PauseGame();
+            }
+            else
+            {
+                ResumeGame();
+            }
+        }
+    }
+    //?=============================================
+    void ResumeGame()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        GameIsPaused = false;
+    }
+    //?=============================================
+    void PauseGame()
+    {
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        GameIsPaused = true;
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
