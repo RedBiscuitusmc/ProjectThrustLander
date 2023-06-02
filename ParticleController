@@ -1,0 +1,124 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ParticleController : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    //?=============================================
+    [Header("Particles")]
+    [SerializeField] ParticleSystem mainThrustParticles = null;
+    [SerializeField] ParticleSystem mainTrailParticles = null;
+    [SerializeField] ParticleSystem LeftThrustParticles = null;
+    [SerializeField] ParticleSystem RightThrustParticles = null;
+    [SerializeField] ParticleSystem successParticles = null;
+    [SerializeField] ParticleSystem crashParticles = null;
+    [SerializeField] ParticleSystem  RockCrashParticle = null;
+    [SerializeField] ParticleSystem  CloudCrashParticle = null;
+    [SerializeField] ParticleSystem  HealthPickUpParticle = null;
+    [SerializeField] ParticleSystem  fuelPickUpParticle = null;
+    //?=============================================
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Start()
+    {
+
+    }
+    //?=============================================
+    void Update()
+    {
+        
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    //?=============================================
+    public void StopAllParticles()
+    {
+        StopMainThrustParticles();
+        StopLeftThrustParticle();
+        StopRightThrustParticle();
+        StopHealthPickUpParticle();
+        StopRockPartcile();
+        StopFuelPickUpParticle();
+    }
+    //?=============================================
+    public void PlayMainThrustParticles()
+    {
+        mainThrustParticles.Play();
+        mainTrailParticles.Play();
+    }
+    //?=============================================
+    public void StopMainThrustParticles()
+    {
+        mainThrustParticles.Stop();
+        mainTrailParticles.Stop();
+    }
+    //?=============================================
+    public void PlayCrashParticle()
+    {
+        crashParticles.Play();
+    }
+    //?=============================================
+    public void PlaySuccessParticle()
+    {
+        successParticles.Play();
+    }
+    //?=============================================
+    public void PlayLeftThrustParticle()
+    {
+        LeftThrustParticles.Play();
+    }
+    //?=============================================
+    public void StopLeftThrustParticle()
+    {
+        LeftThrustParticles.Stop();
+    }
+    //?=============================================
+    public void PlayRightThrustParticle()
+    {
+        RightThrustParticles.Play();
+    }
+    //?=============================================
+    public void StopRightThrustParticle()
+    {
+        RightThrustParticles.Stop();
+    }
+    //?=============================================
+    public void PlayHealthPickUpParticle()
+    {
+        HealthPickUpParticle.Play();
+    }
+    //?=============================================
+    public void StopHealthPickUpParticle()
+    {
+        HealthPickUpParticle.Stop();
+    }    
+    //?=============================================
+    public void PlayRockPartcile()
+    {
+        RockCrashParticle.Play();
+        CloudCrashParticle.Play();
+    }
+    //?=============================================
+    public void StopRockPartcile()
+    {
+        RockCrashParticle.Stop();
+        CloudCrashParticle.Stop();
+    }
+    //?=============================================
+    public void PlayFuelPickUpParticle()
+    {
+        fuelPickUpParticle.Play();
+    }
+    public void StopFuelPickUpParticle()
+    {
+        fuelPickUpParticle.Stop();
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
