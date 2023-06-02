@@ -1,0 +1,73 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class CheatController : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    protected GameObject rocket;
+    #endregion
+    //**=============================================
+    #region |Varibles|
+    protected bool colisionStatus = true;
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    //?=============================================
+    void Awake() 
+    {
+        this.rocket = GameObject.Find("Player");
+    }
+    //?=============================================
+    void Start()
+    {
+    }
+    //?=============================================
+    void Update()
+    {
+        CheatNextLevel();
+        CheatNoCollision();
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    //?=============================================
+    void CheatNextLevel()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            this.LoadNextLevel();
+        } 
+    }
+    //?=============================================
+    void CheatNoCollision()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            this.ChangeCollisionStatus(!this.colisionStatus);
+        }
+    }
+    //?=============================================
+    void ChangeCollisionStatus(bool status)
+    {
+        Debug.Log(status);
+        this.rocket.GetComponent<CollisionHandler>().enabled = status;
+        this.colisionStatus = status;
+    }
+    //?=============================================
+    void LoadNextLevel()
+    {
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (SceneManager.sceneCountInBuildSettings - 1 < nextSceneIndex)
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
