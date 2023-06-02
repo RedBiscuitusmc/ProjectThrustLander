@@ -1,0 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BounceScript : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+    //?=============================================
+    [Header("Bounce Selection")]
+    private float NoMagicNumbers = 0f;
+    public float amp;
+    public float freq;
+    Vector3 initPos;
+    //?=============================================
+    #endregion
+    //**=============================================
+    void Start()
+    {
+        
+    }
+
+    void Update()
+    {
+        
+    }
+    //**=============================================
+    #region |Methods|
+    //?=============================================
+    void UpdatePosition()
+    {
+        transform.position = new Vector3(initPos.x, Mathf.Sin(Time.time * freq) * amp + initPos.y, NoMagicNumbers);
+    }
+    //?=============================================
+    #endregion
+    //**=============================================
+}
