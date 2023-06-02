@@ -1,0 +1,209 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class SoundController : MonoBehaviour
+{
+    //**=============================================
+    #region |SerializedFields|
+
+    [Header("Sound Effects")]
+	[SerializeField] AudioClip MainThruster = null;
+	[SerializeField] AudioClip AuxiliaryThruster = null;
+    [SerializeField] AudioClip HealthPickUpAudio = null;
+    [SerializeField] AudioClip CrashAudio = null;
+    [SerializeField] AudioClip BackGround = null;
+
+    
+    [Header("Sliders")]
+    [SerializeField] Slider volumeSlider = null;
+    [SerializeField] Slider volumeBackGroundSlider = null;
+    
+    #endregion
+    //**=============================================
+    #region |Public Varibles|
+
+    [Header("AudioSources")]
+    public AudioSource aSMT; //audioSourceMainThrust
+    public AudioSource aSAT; //audioSourceAuxiliaryThrust
+    public AudioSource aSHPU; //audioSourceHealthPickUp 
+    public AudioSource aSXTRA; //extra audio source 
+    public AudioSource ASBackGround; //audioSourceAuxiliaryBackGround
+
+    #endregion
+    //**============================================= 
+    #region |Varibles|
+    private float musicVolume = 1f;
+    private float BackGroundmusicVolume = 1f;
+    private float StartingSoundLevel = 0.25f;
+    private float ZeroSoundLevel = 0f;
+    #endregion
+    //**=============================================
+    #region |Referances|
+    #endregion
+    //**=============================================
+    #region |Start / Update / Awake|
+    void Awake()
+    {
+        aSMT = gameObject.AddComponent<AudioSource>();
+        aSAT = gameObject.AddComponent<AudioSource>();
+        aSHPU = gameObject.AddComponent<AudioSource>();
+        aSXTRA = gameObject.AddComponent<AudioSource>();
+        ASBackGround = gameObject.AddComponent<AudioSource>();
+
+        aSXTRA.playOnAwake = false;
+        aSHPU.playOnAwake = false;
+        aSMT.playOnAwake = false;
+        aSAT.playOnAwake = false;
+        StartUpVolume();
+        StartUpBackgroundVolume();
+        StartAudioAdjustment();
+    }
+    //?=============================================
+    void Start()
+    {
+        
+    }
+    //?=============================================
+    void Update()
+    {
+        
+    }
+    #endregion
+    //**=============================================
+    #region |Methods|
+    public void StartMainThrustAudio()
+   {
+        if(!aSMT.isPlaying)
+        {
+            aSMT.PlayOneShot(MainThruster);
+        }
+   }
+    //?=============================================
+   public void StopMainThrustAudio()
+   {
+        if(aSMT.isPlaying)
+        {
+            aSMT.Stop();
+        }
+   }
+    //?=============================================
+    public void StartAuxiliaryThrustAudio()
+    {
+        if(!aSAT.isPlaying)
+        {
+            aSAT.PlayOneShot(AuxiliaryThruster);
+        }
+    }
+    //?=============================================
+    public void StopAuxiliaryThrustAudio()
+    {
+        if(!aSAT.isPlaying)
+        {
+            aSAT.Stop();
+        }
+    }
+    //?=============================================
+    public void StopAllAudio()
+    {
+        if(aSAT.isPlaying || aSMT.isPlaying || aSXTRA.isPlaying || aSHPU.isPlaying)
+        {
+            aSMT.Stop();
+            aSAT.Stop();
+            aSHPU.Stop();
+            aSXTRA.Stop();
+        }
+    }
+    //?=============================================
+    public void PlayCrashAudio()
+    {
+        if(!aSXTRA.isPlaying)
+        {
+            aSXTRA.PlayOneShot(CrashAudio);
+        }
+    }
+    //?=============================================
+    public void PlayHealthPickUpAudio()
+    {
+        if(!aSHPU.isPlaying)
+        {
+            aSHPU.PlayOneShot(HealthPickUpAudio);
+        }
+    }
+    //?=============================================
+    //==================== U.I. ====================
+    //?=============================================
+    public void ChangeVolume(float volume)
+    {
+        BackGroundmusicVolume = volume;
+        ASBackGround.volume = BackGroundmusicVolume;
+        HelpUpdateBackground();
+    }
+    public void UpdateVolume(float volume)
+    {
+        musicVolume = volume;
+        aSMT.volume = musicVolume;
+        aSAT.volume = musicVolume;
+        aSXTRA.volume = musicVolume;
+        HelpChangeAudio();
+    }
+    //?=============================================
+    void StartAudioAdjustment()
+    {
+        aSAT.volume = StartingSoundLevel;
+        aSMT.volume = StartingSoundLevel;
+        aSXTRA.volume = StartingSoundLevel;
+        ASBackGround.PlayOneShot(BackGround);
+    }
+    void HelpChangeAudio()
+    {
+        aSAT.volume = volumeSlider.value;
+        aSMT.volume = volumeSlider.value;
+        aSXTRA.volume = volumeSlider.value;
+        ASBackGround.volume = BackGroundmusicVolume;
+    }
+    //?=============================================
+    void HelpUpdateBackground()
+    {
+        ASBackGround.volume = volumeBackGroundSlider.value;
+    }
+    //?=============================================
+    void StartUpVolume()
+    {
+        if(!PlayerPrefs.HasKey("musicVolume") )
+        {
+            PlayerPrefs.SetFloat("musicVolume",StartingSoundLevel);
+            LoadVolume();
+        }
+        else
+        {
+            LoadVolume();
+        }
+    }
+    void StartUpBackgroundVolume()
+    {
+        if(!PlayerPrefs.HasKey("BackGroundmusicVolume") )
+        {
+            PlayerPrefs.SetFloat("BackGroundmusicVolume",StartingSoundLevel);
+            LoadBackgroundVolume();
+        }
+        else
+        {
+            LoadBackgroundVolume();
+        }
+    }
+    //?=============================================
+    void LoadVolume()
+    {
+        volumeSlider.value = PlayerPrefs.GetFloat("musicVolume");
+    }
+    void LoadBackgroundVolume()
+    {
+        volumeBackGroundSlider.value = PlayerPrefs.GetFloat("BackGroundmusicVolume");
+    }
+    //?=============================================
+   #endregion 
+   //**=============================================
+}
